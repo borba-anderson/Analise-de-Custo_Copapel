@@ -3,354 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financeiro - Setembro de 2024</title>
+    <title>Dash Copapal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #f8f9fa;
             color: #333;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
         }
         header {
             background-color: #FFA500;
             color: white;
             padding: 20px;
             text-align: center;
-            font-size: 2.5em;
-            font-weight: bold;
-            border-bottom: 5px solid #e68a00;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 28px;
         }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .slide {
-            display: none;
-        }
-        .slide.active {
-            display: block;
-        }
-        .slide-content {
-            margin-bottom: 20px;
-        }
-        .summary {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .summary div {
-            background-color: #f1f1f1;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 30%;
-        }
-        .summary div h3 {
-            margin-bottom: 10px;
-            font-size: 1.8em;
-        }
-        .summary div p {
-            font-size: 1.5em;
+        h1 {
             color: #333;
+            font-size: 2.2em;
+            margin: 20px 0;
+            font-weight: 600;
         }
-        .summary div p.entrada {
-            color: green;
+        h2 {
+            color: #FFA500;
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
-        .summary div p.saida {
-            color: red;
+        .chart-container {
+            width: 90%;
+            max-width: 900px;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            transition: box-shadow 0.3s ease;
         }
-        .table-container {
-            margin-top: 20px;
-            overflow-x: auto;
+        .chart-container:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .total-value {
+            font-size: 1.6em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #007BFF;
         }
         table {
-            width: 100%;
+            width: 90%;
+            max-width: 900px;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 1.2em;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
-        table, th, td {
-            border: 1px solid #ddd;
+        th, td {
             padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
         th {
             background-color: #FFA500;
             color: white;
-            text-align: left;
         }
-        td {
-            text-align: right;
+        tr:hover {
+            background-color: #f1f1f1;
         }
-        .entrada {
-            color: green;
-            font-weight: bold;
+        canvas {
+            width: 100% !important;
+            height: 400px !important;
         }
-        .saida {
-            color: red;
-            font-weight: bold;
-        }
-        .chart-container {
-            width: 100%;
-            margin-bottom: 30px;
-            max-width: 800px;
-            margin: auto;
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #FFA500;
-            color: white;
-            border-top: 5px solid #e68a00;
-        }
-        .btn {
-            background-color: #FFA500;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #e68a00;
-        }
-        .nav-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-        style {
-            table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    border: 1px solid #000;
-    padding: 8px;
-    text-align: center; /* Alinha o texto ao centro */
-    vertical-align: middle; /* Centraliza verticalmente */
-}
-
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            canvas {
+                height: 300px !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<header>
-    ORIGETECOS - Setembro de 2024
-</header>
+<header>Dash Copapal - Controle de Gastos</header>
 
-<div class="container">
-    <!-- Slide 1: Resumo Financeiro -->
-    <div class="slide active">
-        <div class="slide-content">
-            <h2>Resumo Financeiro</h2>
-            <div class="summary">
-                <div>
-                    <h3>Entradas</h3>
-                    <p class="entrada">R$ 130,00</p>
-                </div>
-                <div>
-                    <h3>Saídas</h3>
-                    <p class="saida">R$ 80,71</p>
-                </div>
-                <div>
-                    <h3>Saldo Final</h3>
-                    <p>R$ 49,29</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<h1>Relatório Anual</h1>
+<h2 style="font-size: 2.5em; font-weight: bold;">Total Geral: R$ 21.589,77</h2>
 
-    <!-- Slide 2: Gráfico de Saldo -->
-    <div class="slide">
-        <div class="slide-content">
-            <h2>Gráfico de Saldo</h2>
-            <div class="chart-container">
-                <canvas id="saldoChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 3: Resumo de Transações -->
-    <div class="slide" id="resumo-transacoes">
-        <h2>Resumo de Transações</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>DATA</th>
-                        <th>TIPO</th>
-                        <th>VALOR</th>
-                        <th>DESCRIÇÃO</th>
-                        <th>OBSERVAÇÃO</th>
-                        <th>SUBTOTAL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>30/08/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>CATI</td>
-                        <td>R$ 15,00</td>
-                    </tr>
-                    <tr>
-                        <td>30/08/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>MELIANTE</td>
-                        <td>R$ 30,00</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>CRIANÇA S/ESPERANÇA</td>
-                        <td>R$ 45,00</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>SUJIRO</td>
-                        <td>R$ 60,00</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>RAGNAROK</td>
-                        <td>R$ 75,00</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 15,00</td>
-                        <td>RECEBIMENTO CAIXA</td>
-                        <td>GHOST</td>
-                        <td>R$ 90,00</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 16,98</td>
-                        <td>CAFÉ MELITA TRADICIONAL</td>
-                        <td>HIPERMAIS</td>
-                        <td>R$ 73,02</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 16,98</td>
-                        <td>CAFÉ MELITA TRADICIONAL</td>
-                        <td>HIPERMAIS</td>
-                        <td>R$ 56,04</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 3,79</td>
-                        <td>PAPEL FILTRO</td>
-                        <td>HIPERMAIS</td>
-                        <td>R$ 52,25</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 8,98</td>
-                        <td>COADOR MELITA</td>
-                        <td>HIPERMAIS</td>
-                        <td>R$ 43,27</td>
-                    </tr>
-                    <tr>
-                        <td>02/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 16,99</td>
-                        <td>LEITE EM PÓ</td>
-                        <td>HIPERMAIS</td>
-                        <td>R$ 26,28</td>
-                    </tr>
-                    <tr>
-                        <td>03/09/2024</td>
-                        <td class="entrada">ENTRADA</td>
-                        <td>R$ 40,00</td>
-                        <td>OFERTA</td>
-                        <td>DOUGLAS</td>
-                        <td>R$ 66,28</td>
-                    </tr>
-                    <tr>
-                        <td>12/09/2024</td>
-                        <td class="saida">SAÍDA</td>
-                        <td>R$ 16,99</td>
-                        <td>LEITE EM PÓ</td>
-                        <td>CONDOR</td>
-                        <td>R$ 49,29</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-   
-
-
-    <!-- Navegação entre slides -->
-    <div class="nav-buttons">
-        <button class="btn" onclick="showSlide(0)">Resumo</button>
-        <button class="btn" onclick="showSlide(1)">Gráfico de Saldo</button>
-        <button class="btn" onclick="showSlide(2)">Transações</button>
-    </div>
+<div class="chart-container">
+    <canvas id="gastoMensalChart"></canvas>
 </div>
 
-<footer>
-    © Anderson Borba
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function showSlide(index) {
-        const slides = document.querySelectorAll('.slide');
-        slides.forEach(slide => slide.classList.remove('active'));
-        slides[index].classList.add('active');
-    }
+    const ctx = document.getElementById('gastoMensalChart').getContext('2d');
+    
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(72, 207, 173, 1)');
+    gradient.addColorStop(1, 'rgba(72, 207,173, 0.7)');
 
-    const ctx = document.getElementById('saldoChart').getContext('2d');
-    const saldoChart = new Chart(ctx, {
+    const gastoMensalChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Entradas', 'Saídas', 'Saldo Final'],
+            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto'],
             datasets: [{
-                label: 'Valores (R$)',
-                data: [130.00, 80.71, 49.29],
-                backgroundColor: ['#4CAF50', '#F44336', '#2196F3'],
-                borderColor: ['#388E3C', '#D32F2F', '#1976D2'],
-                borderWidth: 1
+                label: 'Gasto por Mês (R$)',
+                data: [3236.35, 3766.27, 3328.17, 3678.27, 1541.99, 2070.07, 1882.52, 2086.13],
+                backgroundColor: gradient,
+                borderColor: 'rgba(0, 0, 0, 0.7)',
+                borderWidth: 2,
+                hoverBackgroundColor: 'rgba(72, 207, 173, 1)',
+                hoverBorderColor: 'rgba(0, 0, 0, 1)',
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 800,
+            },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return 'R$ ' + value.toFixed(2);
+                        },
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return 'R$ ' + tooltipItem.raw.toFixed(2);
+                        }
+                    }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    color: 'black',
+                    formatter: function(value) {
+                        return 'R$ ' + value.toFixed(2);
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    }
                 }
             }
-        }
+        },
+        plugins: [ChartDataLabels]
     });
 </script>
 
+<table>
+    <thead>
+        <tr>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Álcool Líquido 70° INPM 1L</td>
+            <td>R$ 213,12</td>
+        </tr>
+        <tr>
+            <td>Copo de Plástico 200ml (100 un)</td>
+            <td>R$ 1.614,25</td>
+        </tr>
+        <tr>
+            <td>Detergente Ypê Neutro 500ml</td>
+            <td>R$ 208,85</td>
+        </tr>
+        <tr>
+            <td>Esponja Mágica para Remoção de Manchas</td>
+            <td>R$ 59,44</td>
+        </tr>
+        <tr>
+            <td>Esponja Scotch Brite Multiuso</td>
+            <td>R$ 57,44</td>
+        </tr>
+        <tr>
+            <td>Guardanapo Folha Dupla 16x21 cm</td>
+            <td>R$ 889,60</td>
+        </tr>
+        <tr>
+            <td>Limpeza Geral Qboa 5L</td>
+            <td>R$ 451,84</td>
+        </tr>
+        <tr>
+            <td>Odorizador Ultra Fresh para Ambientes Lavanda 400ml</td>
+            <td>R$ 602,74</td>
+        </tr>
+        <tr>
+            <td>Pano de Prato Branco 50x70 cm</td>
+            <td>R$ 64,70</td>
+        </tr>
+        <tr>
+            <td>Papel Higiênico Rolão cx c/ 8 rolos</td>
+            <td>R$ 1.970,45</td>
+        </tr>
+        <tr>
+            <td>Papel Toalha Interfolha 20x20</td>
+            <td>R$ 9.056,24</td>
+        </tr>
+        <tr>
+            <td>Papel Toalha Simples 6x20m</td>
+            <td>R$ 865,43</td>
+        </tr>
+        <tr>
+            <td>Refil Sabonete Desengraxante Cítrico 4L</td>
+            <td>R$ 3.251,49</td>
+        </tr>
+        <tr>
+            <td>Sabonete Desengraxante 5L</td>
+            <td>R$ 205,90</td>
+        </tr>
+        <tr>
+            <td>Saco de Lixo 100L Reforçado</td>
+            <td>R$ 916,92</td>
+        </tr>
+        <tr>
+            <td>Saco de Lixo 200L Reforçado</td>
+            <td>R$ 641,44</td>
+        </tr>
+    </tbody>
+</table>
+
 </body>
 </html>
+
