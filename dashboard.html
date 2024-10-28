@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dash Copapel - Controle de Gastos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #0056b3;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            width: 100%;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .content {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.2em;
+        }
+
+        h2 {
+            color: #0056b3;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .search-container input {
+            padding: 12px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #0056b3;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .insert-btn, .exit-btn {
+            padding: 10px 20px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .insert-btn {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .insert-btn:hover {
+            background-color: #004085;
+        }
+
+        .exit-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .exit-btn:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .search-container input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>Copapel</header>
+
+<div class="content">
+    <h1>Balanço Financeiro</h1>
+    <h2>R$ 25.106,53</h2>
+
+    <div class="chart-container">
+        <canvas id="gastoMensalChart"></canvas>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Pesquisar por descrição...">
+    </div>
+
+    <button class="insert-btn" onclick="insertItem()">Inserir Novo Item</button>
+    <button class="exit-btn" onclick="exitApp()">Sair</button>
+
+    <table id="gastosTable">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Álcool Líquido 70° INPM 1L</td><td>R$ 331,62</td></tr>
+            <tr><td>Copo de Plástico 200ml (100 un)</td><td>R$ 1.761,00</td></tr>
+            <tr><td>Detergente Ypê Neutro 500ml</td><td>R$ 231,17</td></tr>
+            <tr><td>Escova Sanitária P/vasos</td><td>R$ 54,45</td></tr>
+            <tr><td>Esponja Mágica para Remoção de Manchas</td><td>R$ 96,59</td></tr>
+            <tr><td>Esponja Scotch Brite Multiuso</td><td>R$ 57,44</td></tr>
+            <tr><td>Esponja Unitária Multiuso</td><td>R$ 20,40</td></tr>
+            <tr><td>Guardanapo Folha Dupla 16x21 cm</td><td>R$ 1.250,83</td></tr>
+            <tr><td>Limpeza Geral Qboa 5L</td><td>R$ 490,72</td></tr>
+            <tr><td>Odorizador Ultra Fresh Lavanda 400ml</td><td>R$ 744,29</td></tr>
+            <tr><td>Pano de Prato Branco 50x70 cm</td><td>R$ 64,70</td></tr>
+            <tr><td>Papel Higiênico Rolão (8 rolos)</td><td>R$ 1.970,45</td></tr>
+            <tr><td>Papel Toalha Interfolha 20x20</td><td>R$ 10.568,84</td></tr>
+            <tr><td>Papel Toalha Simples 6x20</td><td>R$ 865,43</td></tr>
+            <tr><td>Refil Sabonete Desengraxante</td><td>R$ 3.941,20</td></tr>
+            <tr><td>Refil Sabonete Espuma Floral</td><td>R$ 126,80</td></tr>
+            <tr><td>Sabonete Desengraxante 5L</td><td>R$ 247,08</td></tr>
+            <tr><td>Saco de Lixo 100L 85x75cm</td><td>R$ 1.186,26</td></tr>
+            <tr><td>Saco de Lixo 200L 130x100cm</td><td>R$ 444,16</td></tr>
+            <tr><td>Saco de Lixo 20L 39x52</td><td>R$ 11,66</td></tr>
+            <tr><td>Tapete de Vinil 120x80cm</td><td>R$ 641,44</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const ctx = document.getElementById('gastoMensalChart').getContext('2d');
+
+    const gastoMensalChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro'],
+            datasets: [{
+                label: 'Gasto por Mês (R$)',
+                data: [3236.35, 3766.27, 3328.17, 3678.27, 1541.99, 2070.07, 1882.52, 2086.13, 1108.80, 2407.96],
+                backgroundColor: '#72c3dc',
+                borderColor: '#0056b3',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                datalabels: {
+                    color: '#333',
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: value => 'R$ ' + value.toFixed(2)
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => 'R$ ' + value.toFixed(2)
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const gastosTable = document.getElementById('gastosTable').getElementsByTagName('tbody')[0];
+
+    searchInput.addEventListener('input', function () {
+        const filter = searchInput.value.toLowerCase();
+        const rows = gastosTable.getElementsByTagName('tr');
+        
+        Array.from(rows).forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+
+    function exitApp() {
+        window.location.href = 'login.html'; // Redireciona para a página de login
+    }
+</script>
+
+</body>
+</html>
+
